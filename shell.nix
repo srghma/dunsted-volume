@@ -1,14 +1,10 @@
 with import <nixpkgs> {};
 
-stdenv.mkDerivation ({
-  name = "dummy";
-  buildCommand = "";
-  passAsFile = [ "buildCommand" ];
+stdenv.mkDerivation rec {
+  name = "env";
+  env = buildEnv { name = name; paths = buildInputs; };
   buildInputs = [
     libnotify
     alsaUtils
   ];
-  shellHook = ''
-    echo "${libnotify}"
-  '';
-})
+}
