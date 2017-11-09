@@ -1,4 +1,4 @@
-#!@bash@/bin/bash
+#!/bin/sh
 
 # You can call this script like this:
 # $./volume.sh up
@@ -7,8 +7,6 @@
 
 # code stolen from
 # https://gist.github.com/sebastiencs/5d7227f388d93374cebdf72e783fbd6a
-
-PATH=@coreutils@/bin:@alsaUtils@/bin:@libnotify@/bin${PATH:+:$PATH}
 
 appid='dunsted-volume'
 
@@ -26,7 +24,7 @@ function send_notification {
   # https://en.wikipedia.org/wiki/Box-drawing_character
   bar=$(seq -s "─" $(($volume / 5)) | sed 's/[0-9]//g')
   # Send the notification
-  notify-send --icon=audio-volume-medium --expire-time=8 --app-name=$app_id --urgency=normal "    $bar"
+  notify-send -i audio-volume-medium -t 8 -a $app_id -u normal "    $bar"
 }
 
 case $1 in
@@ -44,7 +42,7 @@ case $1 in
     # Toggle mute
     amixer set Master 1+ toggle > /dev/null
     if is_mute ; then
-      notify-send --icon=audio-volume-muted --expire-time=8 --app-name=$app_id --urgency=normal "Mute"
+      notify-send -i audio-volume-muted -t 8 -a $app_id -u normal "Mute"
     else
       send_notification
     fi
