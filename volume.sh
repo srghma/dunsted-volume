@@ -1,12 +1,14 @@
-#!/bin/sh
+#!@bash@/bin/bash
 
 # You can call this script like this:
 # $./volume.sh up
 # $./volume.sh down
 # $./volume.sh mute
 
-# https://nixos.org/nixos/manual/#sec-custom-packages
+# code stolen from
 # https://gist.github.com/sebastiencs/5d7227f388d93374cebdf72e783fbd6a
+
+PATH=@coreutils@/bin:@alsaUtils@/bin:@libnotify@/bin${PATH:+:$PATH}
 
 appid='dunsted-volume'
 
@@ -24,29 +26,27 @@ function send_notification {
   # https://en.wikipedia.org/wiki/Box-drawing_character
   bar=$(seq -s "─" $(($volume / 5)) | sed 's/[0-9]//g')
   # Send the notification
-  notify-send -i audio-volume-muted-blocking -t 8 -a $app_id -u normal "    $bar"
+  notify-send --icon=audio-volume-medium --expire-time=8 --app-name=$app_id --urgency=normal "    $bar"
 }
 
 case $1 in
   up)
-    # Set the volume on (if it was muted)
     amixer set Master on > /dev/null
-    # Up the volume (+ 5%)
-    amixer sset Master 5%+ > /dev/null
+    amixer -c0 set Master 5%+ > /dev/null
     send_notification
     ;;
   down)
     amixer set Master on > /dev/null
-    amixer sset Master 5%- > /dev/null
+    amixer -c0 set Master 5%- > /dev/null
     send_notification
     ;;
   mute)
-        # Toggle mute
+    # Toggle mute
     amixer set Master 1+ toggle > /dev/null
     if is_mute ; then
-        notify-send -i audio-volume-muted -t 8 -r $app_id -u normal "Mute"
+      notify-send --icon=audio-volume-muted --expire-time=8 --app-name=$app_id --urgency=normal "Mute"
     else
-        send_notification
+      send_notification
     fi
     ;;
 esac
