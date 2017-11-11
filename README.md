@@ -1,5 +1,8 @@
 # dunsted-volume
-for nixos
+
+Volume change notification
+
+![Imgur](https://i.imgur.com/0Pmu5sV.png)
 
 # Installation
 
