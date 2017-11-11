@@ -3,27 +3,31 @@ for nixos
 
 # Installation
 
-Derivation for local install
+## Systemwide
+
+Add this to your configuration.nix
 
 ```nix
-{ stdenv, fetchFromGitHub, pkgs, makeWrapper }:
+environment.systemPackages = [
+  dunsted-volume
+];
 
-stdenv.mkDerivation rec {
-  name = "dunsted-volume-${version}";
-  version = "0.1";
-
-  src = /home/bjorn/projects/dunsted-volume;
-
-  buildInputs = [ pkgs.libnotify pkgs.alsaUtils ];
-  nativeBuildInputs = [ makeWrapper ];
-
-  installPhase = with stdenv.lib; with pkgs; ''
-    install -v -D -m755 ./volume.sh $out/bin/dunsted-volume
-
-    wrapProgram "$out/bin/dunsted-volume" \
-      --prefix PATH : ${ makeBinPath [libnotify alsaUtils] }
-  '';
-}
+nixpkgs.config.packageOverrides = super: {
+  dunsted-volume = callPackage (fetchFromGitHub {
+    owner = "BjornMelgaard";
+    repo = "dunsted-volume";
+    rev = "ac5136d87c16dd93c8c58e7db8b6d07a76f8faa5";
+    sha256 = "13w2b73952lfpg85mk4zc8fdjbx1rpva1hldmh70dnnmp2f2mc8a";
+  }) {};
+};
 ```
 
-full example [here](https://github.com/BjornMelgaard/dotfiles/blob/8321fcef585ed2ea8b9f1f9798af9d9172e5668d/nixos/pkgs/dunsted-volume/default.nix), [here](https://github.com/BjornMelgaard/dotfiles/blob/8321fcef585ed2ea8b9f1f9798af9d9172e5668d/nixos/pkgs/all-packages.nix), [here](https://github.com/BjornMelgaard/dotfiles/blob/8321fcef585ed2ea8b9f1f9798af9d9172e5668d/nixos/root/system-packages.nix#L65), [here](https://github.com/BjornMelgaard/dotfiles/blob/8321fcef585ed2ea8b9f1f9798af9d9172e5668d/i3/config#L104)
+To update just refresh `rev` and `sha256`, generated with `nix-prefetch-git https://github.com/BjornMelgaard/dunsted-volume`
+
+
+## Local copy
+```nix
+nixpkgs.config.packageOverrides = super: {
+  dunsted-volume = callPackage /home/bjorn/projects/dunsted-volume {};
+};
+```
