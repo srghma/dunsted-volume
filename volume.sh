@@ -9,6 +9,7 @@
 # https://gist.github.com/sebastiencs/5d7227f388d93374cebdf72e783fbd6a
 
 appid='dunsted-volume'
+NOTIFY="notify-send -h string:x-canonical-private-synchronous:anything -t 8 -a \"$app_id\" -u normal"
 
 function get_volume {
   amixer get Master | grep '%' | head -n 1 | cut -d '[' -f 2 | cut -d '%' -f 1
@@ -24,7 +25,7 @@ function send_notification {
   # https://en.wikipedia.org/wiki/Box-drawing_character
   bar=$(seq -s "─" $(($volume / 5)) | sed 's/[0-9]//g')
   # Send the notification
-  notify-send -i audio-volume-medium -t 8 -a $app_id -u normal "    $bar"
+  $NOTIFY -i audio-volume-medium "    $bar"
 }
 
 case $1 in
@@ -42,7 +43,7 @@ case $1 in
     # Toggle mute
     amixer set Master 1+ toggle > /dev/null
     if is_mute ; then
-      notify-send -i audio-volume-muted -t 8 -a $app_id -u normal "Mute"
+      $NOTIFY -i audio-volume-muted "Mute"
     else
       send_notification
     fi

@@ -1,10 +1,9 @@
-with import <nixpkgs> {};
+{ pkgs ? import <nixpkgs> {} }:
 
-stdenv.mkDerivation rec {
-  name = "env";
-  env = buildEnv { name = name; paths = buildInputs; };
-  buildInputs = [
-    libnotify
-    alsaUtils
-  ];
-}
+with pkgs;
+
+let
+  f = import ./.;
+  drv = callPackage f {};
+in
+  drv
