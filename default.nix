@@ -1,6 +1,4 @@
-{ pkgs, libnotify, alsaUtils }:
-
-with pkgs;
+{ lib, stdenv, makeWrapper, libnotify, alsaUtils }:
 
 stdenv.mkDerivation rec {
   pname = "dunsted-volume";
@@ -8,15 +6,17 @@ stdenv.mkDerivation rec {
 
   name = "${pname}-${version}";
 
-  src = ./.;
+  src = ./volume.sh;
+
+  unpackPhase = ":";
 
   nativeBuildInputs = [ makeWrapper ];
   buildInputs = [ libnotify alsaUtils ];
 
-  installPhase = with stdenv.lib; ''
-    install -v -D -m755 ./volume.sh $out/bin/dunsted-volume
+  installPhase = ''
+    install -v -D -m755 $src $out/bin/dunsted-volume
 
     wrapProgram "$out/bin/dunsted-volume" \
-      --prefix PATH : ${ makeBinPath [libnotify alsaUtils] }
+      --prefix PATH : ${ lib.makeBinPath [libnotify alsaUtils] }
   '';
 }
